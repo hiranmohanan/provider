@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider1/operations/autocomplete.dart';
 import 'package:provider1/provider.dart';
 
 void main() {
@@ -46,6 +47,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late int i;
   @override
   Widget build(BuildContext context) {
     final picprovider = Provider.of<Providerset>(context, listen: true);
@@ -58,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
+            TextFormField(
+              onTap: () {},
+            ),
+            const Autocompletetab(),
             picprovider.isloading == true
                 ? const CircularProgressIndicator()
                 : Image.network(

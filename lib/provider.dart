@@ -9,6 +9,19 @@ class Providerset extends ChangeNotifier {
   bool? get isloading => _isloading;
   String? get url => _url;
 
+  set udata(String udata) {
+    _url = url;
+    notifyListeners();
+  }
+
+  final List<String> _list = [
+    "dachshund",
+    "dingo",
+    "doberman",
+    "entlebucher",
+    "eskimo",
+  ];
+  List<String> get list => _list;
   void setloading(bool value) {
     _isloading = value;
     notifyListeners();
