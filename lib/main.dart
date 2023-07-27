@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider1/operations/autocomplete.dart';
-import 'package:provider1/provider.dart';
+import 'package:provider1/operations/lottie_animation.dart';
+import 'package:provider1/provider/file_provider.dart';
+import 'package:provider1/provider/provider.dart';
+import 'package:provider1/resources/lottie/lottie_paths.dart';
+
+import 'screens/file_download_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +22,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<Providerset>(
           create: (_) => Providerset(),
+        ),
+        ChangeNotifierProvider<Fileprovider>(
+          create: (_) => Fileprovider(),
         ),
       ],
       child: MaterialApp(
@@ -63,11 +71,28 @@ class _MyHomePageState extends State<MyHomePage> {
             TextFormField(
               onTap: () {},
             ),
+            // const LottieAnimateLoading(
+            //     // path: lottianimate1,
+            //     ),
             const Autocompletetab(),
             picprovider.isloading == true
-                ? const CircularProgressIndicator()
+                ? const LottieAnimateLoading(
+                    // path: lottianimate1,
+                    )
                 : Image.network(
-                    picprovider.url ?? 'https://picsum.photos/250?image=9')
+                    picprovider.url ?? 'https://picsum.photos/250?image=9'),
+            const SizedBox(
+              height: 30,
+            ),
+            TextButton(
+                onPressed: () {
+                  Provider.of<Fileprovider>(context, listen: false).clean();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const DownloadPage()));
+                },
+                child: const Text("Url Downloader")),
           ],
         ),
       ),
@@ -99,6 +124,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             Navigator.pop(context);
                           },
                           child: const Text("tap")),
+                    ));
+          }
+          if (value == 2) {
+            showDialog(
+                context: context,
+                builder: (context) => const Dialog(
+                      child: LottieAnimateLoading(
+                        path: lottisucess,
+                      ),
                     ));
           }
         },
