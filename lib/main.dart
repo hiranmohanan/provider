@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider1/operations/autocomplete.dart';
@@ -5,8 +6,11 @@ import 'package:provider1/operations/lottie_animation.dart';
 import 'package:provider1/provider/file_provider.dart';
 import 'package:provider1/provider/provider.dart';
 import 'package:provider1/resources/lottie/lottie_paths.dart';
+import 'package:provider1/screens/screen.dart';
+import 'package:provider1/screens/splashscreen.dart';
 
 import 'screens/file_download_page.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,19 +33,16 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
-        home: const MyHomePage(),
+        theme: FlexThemeData.light(scheme: FlexScheme.espresso),
+        darkTheme: FlexThemeData.dark(scheme: FlexScheme.redM3),
+        themeMode: ThemeMode.light,
+        initialRoute: '/',
+        routes: {
+          '/': (_) => const SplashScreen(),
+          '/home': (context) => const MyHomePage(),
+          '/filedownload': (context) => const DownloadPage(),
+        },
+        // home: const SplashScreen(),
       ),
     );
   }
@@ -60,40 +61,102 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final picprovider = Provider.of<Providerset>(context, listen: true);
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Demo Home Page')),
+      appBar: AppBar(title: const Text('Flutter Demo Home Page'), actions: [
+        IconButton(
+          icon: Theme.of(context).brightness == Brightness.dark
+              ? const Icon(Icons.light_mode)
+              : const Icon(Icons.dark_mode),
+          onPressed: () {
+            if (Theme.of(context).brightness == Brightness.dark) {
+              setState(() {
+                ThemeData.light();
+              });
+            } else {
+              if (Theme.of(context).brightness == Brightness.light) {
+                setState(() {
+                  ThemeData.dark();
+                });
+              }
+            }
+            setState(() {});
+          },
+        ),
+      ]),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            TextFormField(
-              onTap: () {},
-            ),
-            // const LottieAnimateLoading(
-            //     // path: lottianimate1,
-            //     ),
-            const Autocompletetab(),
-            picprovider.isloading == true
-                ? const LottieAnimateLoading(
-                    // path: lottianimate1,
-                    )
-                : Image.network(
-                    picprovider.url ?? 'https://picsum.photos/250?image=9'),
-            const SizedBox(
-              height: 30,
-            ),
-            TextButton(
-                onPressed: () {
-                  Provider.of<Fileprovider>(context, listen: false).clean();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DownloadPage()));
-                },
-                child: const Text("Url Downloader")),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              TextFormField(
+                onTap: () {},
+              ),
+              // const LottieAnimateLoading(
+              //     // path: lottianimate1,
+              //     ),
+              SizedBox(
+                height: 20,
+              ),
+              DropdownSearch(
+                popupProps: PopupProps.modalBottomSheet(
+                    showSelectedItems: true,
+                    loadingBuilder: (context, searchEntry) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                    disabledItemFn: (String s) => s.startsWith('I'),
+                    showSearchBox: true,
+                    searchFieldProps: const TextFieldProps(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'Search a country',
+                        labelText: 'Country',
+                      ),
+                    )),
+                items: const [
+                  "Brazil",
+                  "Italia (Disabled)",
+                  "Tunisia",
+                  'Canada'
+                ],
+                onChanged: print,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              const Autocompletetab(),
+              picprovider.isloading == true
+                  ? const LottieAnimateLoading(
+                      // path: lottianimate1,
+                      )
+                  : Image.network(
+                      picprovider.url ?? 'https://picsum.photos/250?image=9'),
+              const SizedBox(
+                height: 30,
+              ),
+              TextButton(
+                  onPressed: () {
+                    Provider.of<Fileprovider>(context, listen: false).clean();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DownloadPage()));
+                  },
+                  child: const Text("Url Downloader")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Screen1()));
+                  },
+                  child: Text("Screen 1"))
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

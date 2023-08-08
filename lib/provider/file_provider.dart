@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Fileprovider extends ChangeNotifier {
   var dio = Dio();
@@ -53,14 +54,26 @@ class Fileprovider extends ChangeNotifier {
         notifyListeners();
         throw Exception("url is null");
       }
+      bool permsson = await Permission.manageExternalStorage.isGranted;
+      if (!permsson) {
+        await Permission.storage.request();
+      } else {
+        if (kDebugMode) {
+          print("=====================permission ${permsson}");
+        }
+      }
+      if (kDebugMode) {
+        print("=====================permission ${permsson}");
+      }
+
       Directory("${direct!.path}/").create(recursive: true);
       final responce = await dio.download(
         _url.toString(),
-        "${direct.path}/file.pdf",
+        "/storage/emulated/0/Download/file.pdf",
         onReceiveProgress: (count, total) {
           if (kDebugMode) {
             print("${(count / total * 100).toStringAsFixed(0)}%");
-            print("${direct.path}/file.pdf");
+            print("/storage/emulated/0/Download/file.pdf");
             print(Exception());
           }
         },
